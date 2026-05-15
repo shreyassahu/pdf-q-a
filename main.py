@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 import pdfplumber
+from chunk_text import chunk_text
 
 app = FastAPI()
 
@@ -7,7 +8,7 @@ app = FastAPI()
 def health_check():
     return {"Status" : "Healthy"}
 
-@app.post("/upload/")
+@app.post("/upload")
 async def upload_file(file: UploadFile):
     
     if file.content_type != "application/pdf":
@@ -17,5 +18,7 @@ async def upload_file(file: UploadFile):
         text = ""
         for page in pdf.pages:
             text += page.extract_text()
+    
+    chunk_text(text)
     
     return {"#content" : text}
